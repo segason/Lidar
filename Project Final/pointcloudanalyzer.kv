@@ -1,0 +1,222 @@
+#:import KivyLexer kivy.extras.highlight.KivyLexer
+#:import Factory kivy.factory.Factory
+
+<Separator>:
+    id: separator
+    size_hint_y: None
+    height: 6
+    canvas:
+        Color:
+            rgb: 0., 0., 0.
+        Rectangle:
+            pos: 0, separator.center_y
+            size: separator.width, 2
+
+<Misc>:
+	title: 'Misc'
+	id: misc
+
+<GroundColor>:
+	title: 'Ground Color'
+	id: ground_color
+
+<BackColor>:
+	title: 'Background Color'
+	id: back_color
+
+<PointColor>:
+	title: 'Background Color'
+	id: point_color
+
+<Viewer>:
+	id: viewer
+
+<Analyzer>:
+	popup: popup.__self__
+	id: analyzer
+	orientation:'vertical'
+    canvas.before:
+        Color:
+            rgb: 0.6, 0.6, 0.6
+        Rectangle:
+            size: self.size
+            source: 'data/background.png'
+
+    Popup:
+		id: popup
+		title: "Explorer"
+		on_parent:
+            if self.parent == analyzer: self.parent.remove_widget(self)
+		BoxLayout:
+			orientation:'vertical'
+			size_hint: 1, 1
+			BoxLayout:
+				size_hint_y: None
+				height: '48dp'
+				ToggleButton:
+					text: 'Icon'
+					state: 'down'
+					group: 'filechooser'
+					on_release: filechooser.view_mode = 'icon'
+
+				ToggleButton:
+					text: 'List'
+					group: 'filechooser'
+					on_release: filechooser.view_mode = 'list'
+
+			FileChooser:
+				id: filechooser
+
+				FileChooserIconLayout
+				FileChooserListLayout
+
+			BoxLayout:
+				size_hint_y: None
+				height: 30
+				Button:
+					text: "Cancel"
+					on_release: popup.dismiss()
+
+				Button:
+					text: "Load"
+					on_release: root.load(filechooser.path, filechooser.selection)
+
+
+	ActionBar:
+        ActionView:
+            id: av
+            ActionPrevious:
+				with_previous: False
+                title: 'Lidar Data'
+            ActionButton:
+                text: 'Exit'
+				on_release: app.stop()
+			ActionButton:
+				text: 'Import file'
+				on_release: popup.open()
+			ActionButton:
+                text: 'Save Modifications'
+                icon: 'data/icons/save.png'
+				on_release: root.save()
+
+	BoxLayout:
+        id: rl
+		size_hint_x: 1
+		BoxLayout:
+			orientation:'vertical'
+			Accordion:
+				orientation: 'vertical'
+				AccordionItem:
+					title: 'Point Cloud'
+					BoxLayout:
+						orientation:'vertical'
+						BoxLayout:
+							pos_hint: {'x': 0, 'center_y': .5}
+							size_hint_y: 0.2
+							height: '48dp'
+							Label:
+								text: 'Point Size'
+
+							Slider:
+								id: s1
+								min: 0.0001
+								max: 0.01
+								value: 0.001
+								step: 0.0005
+
+							Label:
+								text: '{}'.format(s1.value)
+						BoxLayout:
+							orientation:'vertical'
+							Label:
+								text: 'Point Color'
+							PointColor:
+
+				AccordionItem:
+					title: 'Background Color'
+					BoxLayout:
+						id: back_color
+						size_hint_y: 1
+						height: '48dp'
+						BackColor:
+				AccordionItem:
+					title: 'Ground Color'
+					BoxLayout:
+						id: ground_color
+						size_hint_y: 1
+						height: '48dp'
+						GroundColor:
+				AccordionItem:
+					title: 'Misc'
+					BoxLayout:
+						id: misc
+						size_hint_y: 1
+						height: '48dp'
+						Misc:
+				AccordionItem:
+					title: 'Floor Level'
+					BoxLayout:
+						orientation:'vertical'
+						BoxLayout:
+							pos_hint: {'x': 0, 'center_y': .5}
+							size_hint_y: 0.2
+							height: '48dp'
+							Label:
+								text: 'Floor Level'
+
+							Slider:
+								id: z1
+								min: -1
+								max: 1
+								value: -0.327
+								step: 0.0005
+
+							Label:
+								text: '{}'.format(z1.value)
+				AccordionItem:
+					title: 'Instructions'
+					ScrollView:
+						GridLayout:
+							cols: 1
+							orientation:'vertical'
+							height: self.minimum_height
+							size_hint_y: None
+					        Image:
+					            source: 'data/instructions.png'
+								size_hint_y: None
+								height: 800
+								width: 800
+							Label:
+								text: 'Here are instructions on how to navigate around the viewer.'
+								size_hint_y: None
+								size_hint_x: 0.1
+								text_size: self.size
+								halign: 'center'
+							    valign: 'middle'
+							Separator:
+					        Image:
+					            source: 'data/select1.png'
+								size_hint_y: None
+								height: 800
+								width: 700
+							Label:
+								text: 'To select points and color them, hold CMD/CTRL and drag across the viewer. This will select the points. Then select a color from the Point Cloud color selector. Note that this might take a while depending on the selection size.'
+								size_hint_y: None
+								size_hint_x: 0.1
+								text_size: self.size
+							    halign: 'center'
+							    valign: 'middle'
+							Separator:
+					        Image:
+					            source: 'data/select2.png'
+								size_hint_y: None
+								height: 800
+								width: 700
+							Label:
+								text: 'To unselect and see results, right click anywhere in the viewer.'
+								size_hint_y: None
+								size_hint_x: 0.1
+								text_size: self.size
+							    halign: 'center'
+							    valign: 'middle'
+								padding_y: 200
